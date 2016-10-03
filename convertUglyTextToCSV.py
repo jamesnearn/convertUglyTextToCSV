@@ -1,4 +1,5 @@
 import re
+from subprocess import call
 
 def c(txt):
   return ', ' + txt.replace(',', '')
@@ -26,6 +27,18 @@ for index in range(0, len(content) - 1):
     fixed += m[0].replace(',', '-') + ' ' + content[index+1].replace(',', '-') + c(m[1]) + c(m[2]) + c(m[3]) + c(m[4]) + c(m[5]) + c(m[6]) + '\n' 
 
 fixed = fixed.replace('XX', '1.00 EA')
+
+
+newLine = re.compile("(.*), (.*), (.*), (.*), (.*), (.*), (.*)")
+for item in fixed.splitlines():
+  items = newLine.findall(item)
+  if len(items) == 1:
+    if items[0][2] == "0.00":
+      call(["./saveIt.sh", items[0][3], items[0][0], items[0][6]])
+    else:
+      call(["./saveIt.sh", items[0][2], items[0][0], items[0][6]])
+  else:
+    print(len(items))
 
 outfile = open("fixed.csv", 'w')
 for fixedline in fixed:
